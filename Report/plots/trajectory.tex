@@ -1,0 +1,25 @@
+\begin{tikzpicture}
+    \centering
+    \hspace{-20pt}
+        \begin{axis}[
+            % xmode=log,
+            % ymode=log,
+            legend style={at={(1,1)},anchor=north east
+                ,draw=none,fill=none,inner sep=2mm},
+            xlabel=X, % \hertz requires SIunits
+            ylabel=Y,
+            title={Trajectory of the Spacecraft},
+            % grid=both,
+            % minor grid style={gray!25},
+            % major grid style={gray!25},
+            width=1\linewidth,
+            enlarge y limits=0.25,
+            no marks]
+            \addplot[line width=1pt,solid,color=red] %
+            table[x=x,y=y,col sep=comma]{plot_data/trajectory_latex.csv};
+            \addlegendentry{Trajectory}
+            \addplot[line width=1pt,dashed,color=black] %
+            table[x=x,y=y,col sep=comma]{plot_data/state.csv};
+            \addlegendentry{DDPG DG Trajectory}
+        \end{axis}
+    \end{tikzpicture}
