@@ -16,7 +16,12 @@
 \usepackage{pgfplotstable}
 \usepackage{etoolbox} % for \ifnumcomp
 \usepackage{listofitems} % for \readlist to create arrays
-% \usepackage[ruled,vlined]{algorithm2e}
+% \usepackage[ruled,vlined]{algorithm% Increase row height
+\renewcommand{\arraystretch}{1.4}
+
+% Adjust column spacing
+\setlength{\tabcolsep}{8pt}  % default is 6pt, increasing it for better spacing
+
 \tikzset{>=latex} % for LaTeX arrow head
 \colorlet{myred}{red!80!black}
 \colorlet{myblue}{blue!80!black}
