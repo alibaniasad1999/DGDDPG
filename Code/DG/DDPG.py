@@ -1277,7 +1277,8 @@ import pandas as pd
 #%%
 # three body problem env
 class ThreeBodyEnv(gym.Env):
-    def __init__(self, trajectory, error_range=0.01, final_range=0.01):
+    def __init__(self, trajectory, error_range=0.01, final_range=0.01, parameter_variation=False,
+                    initial_condition_variability=False, disturbances=False, non_ideal_engine=False):
         self.trajectory = trajectory
         self.state = np.zeros(4)
         self.dt = 0.01
@@ -1293,6 +1294,10 @@ class ThreeBodyEnv(gym.Env):
         self.render_logic = False
         # second player
         self.second_player = False
+        self.parameter_variation = parameter_variation
+        self.initial_condition_variability = initial_condition_variability
+        self.disturbances = disturbances
+        self.non_ideal_engine = non_ideal_engine
         self.reset()
 
     def step(self, action):
@@ -1307,6 +1312,15 @@ class ThreeBodyEnv(gym.Env):
         # add second player action
         a_x_2 = action[2]/10 if self.second_player else 0
         a_y_2 = action[3]/10 if self.second_player else 0
+
+        # add some random disturbances with 5 percent of chance with 0.1 magnitude of action valid range
+        if np.random.rand() < 0.05 and self.disturbances:
+            a_x += np.random.rand() * 0.1
+            a_y += np.random.rand() * 0.1
+
+        if self.non_ideal_engine:
+            a_x += a_x * np.random.rand() * 0.1
+            a_y += a_y * np.random.rand() * 0.1
 
 
         r1 = np.sqrt((x+self.mu)**2 + y**2)
@@ -1369,6 +1383,12 @@ class ThreeBodyEnv(gym.Env):
         self.position = self.trajectory[0]
         self.steps = 0
         self.position2state()
+        if self.parameter_variation:
+            # mu changes up to 10 percent
+            self.mu = 0.012277471 + np.random.rand() * 0.001
+        if self.initial_condition_variability:
+            # initial condition changes up to 10 percent
+            self.position += self.position * np.random.rand(4) * 0.1
         return 10000*self.state, {}
 #%% md
 # ## DDPG
@@ -1894,9 +1914,18 @@ class DDPG:
             self.logger.dump_tabular()
 
 
-    def test(self, fun_mode=False, deterministic=True, save_data=False):
+    def test(self, plot=True, fun_mode=False, deterministic=True, save_data=False, parameter_variation=False,
+                    initial_condition_variability=False, disturbances=False, non_ideal_engine=False):
         df = pd.read_csv('trajectory.csv')
-        df.head()
+        if parameter_variation:
+            self.env.parameter_variation = True
+        if initial_condition_variability:
+            self.env.initial_condition_variability = True
+        if disturbances:
+            self.env.disturbances = True
+        if non_ideal_engine:
+            self.env.non_ideal_engine = True
+        # df.head()
         # df to numpy array
         data = df.to_numpy()
         print(data.shape)
@@ -1906,6 +1935,7 @@ class DDPG:
         state_array = []
         action_array = []
         action_2_array = []
+        rewards = []
         while True:
             a, _, _ = self.ac.step(torch.as_tensor(o, dtype=torch.float32), deterministic=deterministic)
             a_2, _, _ = self.ac_2.step(torch.as_tensor(o, dtype=torch.float32), deterministic=deterministic)
@@ -1914,7 +1944,8 @@ class DDPG:
             action_2_array.append(a_2)
             action = np.array([a[0].item(), a[1].item(), a_2[0].item(), a_2[1].item()])
 
-            o, _, d, _, position, _ = self.env.step(action)
+            o, r, d, _, position, _ = self.env.step(action)
+            rewards.append(r)
             state_array.append(position)
             if d:
                 break
@@ -1943,7 +1974,7 @@ class DDPG:
 
 
 
-        if fun_mode:
+        if fun_mode and plot:
             # Use XKCD style for hand-drawn look
             with plt.xkcd():
                 plt.plot(state_array[:,0], state_array[:,1], label='State')
@@ -1960,7 +1991,7 @@ class DDPG:
                 plt.xlabel("Time (sec)")
                 plt.ylabel("2th action (N)")
                 plt.show()
-        else:
+        elif plot:
             plt.plot(state_array[:,0], state_array[:,1], label='State')
             plt.plot(trajectory[:,0], trajectory[:,1], label='Trajectory')
             plt.legend()
@@ -1975,6 +2006,8 @@ class DDPG:
             plt.xlabel("Time (sec)")
             plt.ylabel("2th action (N)")
             plt.show()
+
+        return rewards
 
     # save actor critic
     def save(self, filepath='model/actor_critic_torch_DG.pth'):

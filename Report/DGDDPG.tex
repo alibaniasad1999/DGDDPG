@@ -14,6 +14,7 @@
 \usepackage{algorithm}
 \usepackage{pgfplots}
 \usepackage{pgfplotstable}
+\usepgfplotslibrary{statistics}
 \usepackage{etoolbox} % for \ifnumcomp
 \usepackage{listofitems} % for \readlist to create arrays
 % \usepackage[ruled,vlined]{algorithm% Increase row height
@@ -433,7 +434,7 @@ The guidance strategy is implemented using neural networks to approximate the po
 % \input{plots/actor_nn}
 % \input{plots/critic_nn}
 
-% \input{plots/trajectory}
+\input{plots/trajectory}
 
 
 
@@ -443,6 +444,122 @@ The training of the guidance strategy is validated through a series of simulatio
 \subsection{Perturbation Analysis}
 The guidance strategy is evaluated under various perturbations to assess its robustness and resilience to disturbances. The perturbations include variations in the spacecraft's initial conditions, external disturbances, and model uncertainties. The guidance strategy is tested under different perturbation scenarios to evaluate its performance and stability in the presence of disturbances. The perturbation analysis provides insights into the controller's ability to adapt to changing conditions and maintain accurate trajectory following during the Lyapunov orbit transfer.
 % \subsection{Generalization Across Missions}
+
+\begin{figure}
+\begin{tikzpicture}
+	\hspace{-10pt}
+	\begin{axis}
+	  [
+	  ytick={1,2},
+	  yticklabels={DDPG DG, DDPG},
+	  ]
+	  \addplot+[
+		boxplot prepared={
+		  median=688.477151,
+		  upper quartile=686.885704,
+		  lower quartile=683.236397,
+		  upper whisker=692.359664,
+		  lower whisker=677.762436
+		},
+		] coordinates {};
+	  \addplot+[
+	  boxplot prepared={
+		median=589.879372,
+		upper quartile=690.021882,
+		lower quartile=299.609773,
+		upper whisker=692.640044,
+		lower whisker=286.00839
+	  },
+	  ] coordinates {};
+	\end{axis}
+	% disturbance usingg 1000 samples mont carlo
+  \end{tikzpicture}
+  \caption{
+	Comparison of the total rewards obtained by the DDPG and DDPG DG algorithms in the presence of disturbances.
+}
+\end{figure}
+
+
+
+
+
+
+
+\begin{figure}
+	\begin{tikzpicture}
+		\hspace{-10pt}
+		\begin{axis}
+		  [
+		  ytick={1,2},
+		  yticklabels={DDPG DG, DDPG},
+		  ]
+		  \addplot+[
+			boxplot prepared={
+  lower whisker=523.236397,
+  lower quartile=550.762436,
+  median=600.477151,
+  upper quartile=666.885704,
+  upper whisker=682.359664
+},
+			] coordinates {};
+		  \addplot+[
+			boxplot prepared={
+				lower whisker=286.00839,
+				lower quartile=299.609773,
+				median=489.879372,
+				upper quartile=690.021882,
+				upper whisker=692.640044
+			  },
+		  ] coordinates {};
+		\end{axis}
+		% non ideal thrust engine using 1000 samples mont carlo
+	  \end{tikzpicture}
+	  \caption{
+		Comparison of the total rewards obtained by the DDPG and DDPG DG algorithms in the presence of non-ideal thrust engine models.
+	}
+\end{figure}
+
+\begin{figure}
+	\begin{tikzpicture}
+		\hspace{-10pt}
+		\begin{axis}
+		  [
+		  ytick={1,2},
+		  yticklabels={DDPG DG, DDPG},
+		  ]
+		  \addplot+[
+boxplot prepared={
+	lower whisker=681.515208,
+	lower quartile=684.773397,
+	median=686.437301,
+	upper quartile=686.945523,
+	upper whisker=690.203711
+  },
+			] coordinates {};
+		  \addplot+[
+			boxplot prepared={
+  lower whisker=286.00839,
+  lower quartile=299.609773,
+  median=689.879372,
+  upper quartile=690.021882,
+  upper whisker=689.640044
+},
+		  ] coordinates {};
+		\end{axis}
+		% model parameter variation 1000 samples mont carlo
+	  \end{tikzpicture}
+	  \caption{
+		Comparison of the total rewards obtained by the DDPG and DDPG DG algorithms in the presence of model parameter variations.
+	}
+\end{figure}
+
+
+
+
+
+
+
+
 
 \section{Real-Time Implementation}
 The guidance strategy is implemented in real-time using a software-in-the-loop (SIL) simulation environment to validate its performance and computational efficiency. The real-time implementation involves running the guidance strategy on a high-fidelity simulation model of the CR3BP with low-thrust terms and evaluating its performance in real-world scenarios. The real-time implementation demonstrates the feasibility of deploying the guidance strategy on an actual spacecraft and its ability to handle the computational requirements of autonomous navigation in deep-space missions.
