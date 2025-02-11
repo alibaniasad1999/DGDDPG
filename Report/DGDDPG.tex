@@ -88,16 +88,13 @@ ali\_baniasad@ae.sharif.edu}
 \maketitle
 
 \begin{abstract}
-% Onboard autonomy plays a pivotal role in facilitating increasingly complex deep-space missions.
-% In dynamic, high-dimensional systems, developing resource-efficient and robust control strategies remains a significant challenge.
-% Conventional approaches often rely on assumptions that simplify the dynamic model or require extensive computational power, limiting their applicability to onboard systems. 
-% This study proposes a novel reinforcement learning-based differential game framework to design an adaptive closed-loop controller for low-thrust spacecraft guidance within multi-body dynamical environments.
-% In contrast to traditional methods, this approach does not require a detailed analytical model of the system dynamics, allowing it to directly address the nonlinear motion equations and establishes a versatile, data-driven learning paradigm. Leveraging advanced computational resources, a robust neural network controller is trained to generate real-time low-thrust control commands, with minimal computational burden on the onboard flight computer. 
-% The efficacy of the proposed method is established through example transfers between Lyapunov orbits in the Earth and Moon system, where the controller exhibits significant resilience to disturbances, non-ideal engine performance, and variations in environmental parameters, adapting effectively across different  mission profiles and low-thrust propulsion models.
-% This work underscores the potential of reinforcement learning-based differential game methodologies to advance the autonomy of spacecraft navigation in complex gravitational environments.
-Onboard autonomy is essential for deep-space missions, where spacecraft must navigate complex, multi-body environments with limited computational resources. Traditional guidance methods often require simplified dynamic models or high computational power, making them impractical for onboard implementation.
-This study proposes a reinforcement learning-based differential game framework for designing an adaptive, closed-loop controller for low-thrust spacecraft guidance. Unlike conventional methods, this approach does not require an explicit analytical model of the system's dynamics. Instead, it learns directly from nonlinear motion equations, enabling a data-driven control strategy.
-A neural network-based controller is trained using the Deep Deterministic Policy Gradient Differential Game (DDPG-DG) algorithm to generate real-time low-thrust control commands efficiently. The method is validated through simulated Lyapunov orbit transfers in the Earth-Moon system, where it demonstrates strong robustness to disturbances, engine imperfections, and environmental variations. The results highlight the potential of reinforcement learning-based differential game strategies to enhance spacecraft autonomy in complex gravitational environments.
+Onboard autonomy plays a pivotal role in facilitating increasingly complex deep-space missions.
+In dynamic, high-dimensional systems, developing resource-efficient and robust control strategies remains a significant challenge.
+Conventional approaches often rely on assumptions that simplify the dynamic model or require extensive computational power, limiting their applicability to onboard systems. 
+This study proposes a novel reinforcement learning-based differential game framework to design an adaptive closed-loop controller for low-thrust spacecraft guidance within multi-body dynamical environments.
+In contrast to traditional methods, this approach does not require a detailed analytical model of the system dynamics, allowing it to directly address the nonlinear motion equations and establishes a versatile, data-driven learning paradigm. Leveraging advanced computational resources, a robust neural network controller is trained to generate real-time low-thrust control commands, with minimal computational burden on the onboard flight computer. 
+The efficacy of the proposed method is established through example transfers between Lyapunov orbits in the Earth and Moon system, where the controller exhibits significant resilience to disturbances, non-ideal engine performance, and variations in environmental parameters, adapting effectively across different  mission profiles and low-thrust propulsion models.
+This work underscores the potential of reinforcement learning-based differential game methodologies to advance the autonomy of spacecraft navigation in complex gravitational environments.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -115,9 +112,7 @@ Current onboard guidance strategies depend on precomputed trajectory databases~\
 
 Machine learning is increasingly integral to space autonomy. Mars rovers employ ML for autonomous target selection (e.g., AEGIS on Curiosity~\cite{17}), reducing ground dependency for tasks like image analysis~\cite{18}. Future applications include autonomous robotics on Perseverance~\cite{19,20} and anomaly detection for Europa Clipper~\cite{Clipper}. RL-driven neural controllers further advance this trend by prioritizing feasibility over optimality, enabling rapid in-flight recomputation of control histories through lightweight linear algebra operations. This approach reduces reliance on iterative optimization, mitigates communication risks, and enhances adaptability, positioning RL as a cornerstone of next-generation autonomous space missions.
 
-While deep reinforcement learning~\cite{newrl} offers promising solutions, traditional methods in spacecraft guidance often rely on simplified models or pre-computed trajectory databases, which are not suitable for real-time operations in multi-body environments. DDPG~\cite{DDPG} has emerged as a robust solution for continuous control tasks, as it does not require an explicit model of the system and can handle high-dimensional, continuous action spaces. However, pure DDPG is limited when it comes to multi-agent dynamics or complex interactions in multi-body systems, where spacecraft motion is influenced by gravitational forces from multiple bodies.
-
-To address these limitations, this study introduces a novel Deep Deterministic Policy Gradient Differential Game (DDPG-DG) framework. By incorporating differential game theory, DDPG-DG extends the DDPG algorithm to handle multi-agent control tasks in a multi-body environment, where two spacecraft interact as competitive agents. This approach enhances the performance of the DDPG-based controller in the presence of disturbances, non-ideal engine behavior, and variations in environmental parameters, making it more robust than pure DDPG. The proposed method maintains the computational efficiency of DDPG while providing better adaptability to complex dynamical settings.
+This study introduces a novel framework for closed-loop multi-agent control in multi-body systems, leveraging the Deep Deterministic Policy Gradient Differential Game (DDPG-DG) approach within the differential game paradigm. The method develops a neural network controller capable of autonomously guiding a spacecraft to its target despite substantial disturbances, non-ideal engine performance, and environmental parameter variations, without requiring direct knowledge of the system's dynamics. Upon training, the neural network exhibits several key advantages for onboard deployment, including computational efficiency, robustness to trajectory variations, and adaptability across diverse mission profiles. The controller's robustness is assessed under challenging conditions such as parameter uncertainties, non-ideal thrust engine behavior, and external disturbances. The results demonstrate the efficacy of the proposed framework in enhancing spacecraft autonomy and guiding future deep-space missions.
 
 
 \section{Problem Statement}
@@ -128,7 +123,7 @@ Furthermore, low-thrust engine is integrated to evaluate the effectiveness of th
 While the suggested guidance strategy directly produces a sequence of control actions, the trained neural network operates as a resilient controller across various scenarios.
 This adaptability is demonstrated through its ability to enhance performance in different operational conditions, illustrating its potential for improving onboard guidance.
 \subsection{Dynamical Model}
-Two fundamental celestial bodies' gravitational pull on an infinitesimal mass is modeled by the CR3BP. The Earth and Moon, two spherically symmetric masses, follow circular orbits around their common barycenter in this framework. As seen in Fig.~\ref{fig:CR3BP}, the third body, a spacecraft, moves independently relative to the barycenter. The relative size of the primaries is characterized by the mass ratio
+Two fundamental celestial bodies' gravitational pull on an infinitesimal mass is modeled by the Circular Restricted Three-Body Problem (CR3BP). The Earth and Moon, two spherically symmetric masses, follow circular orbits around their common barycenter in this framework. As seen in Fig.~\ref{fig:CR3BP}, the third body, a spacecraft, moves independently relative to the barycenter. The relative size of the primaries is characterized by the mass ratio
 \begin{equation}
 	\mu = \frac{M_2}{M_1 + M_2},
 \end{equation}
@@ -138,11 +133,6 @@ The state of the spacecraft, defined by its position and velocity vectors \( \vb
 \begin{equation}
 	\boldsymbol{\rho}_{\text{spatial}} = \begin{bmatrix} x & y & z & \dot{x} & \dot{y} & \dot{z} \end{bmatrix}^T.
 \end{equation}
-where:
-\begin{itemize}
-    \item \(x, y, z\) are the spacecraft's position coordinates relative to the rotating frame.
-    \item \(\dot{x}, \dot{y}, \dot{z}\) are the corresponding velocity components.
-\end{itemize}
 
 These state variables are advanced relative to the barycenter within a rotating coordinate system, illustrated by the dashed lines in Fig.~\ref{fig:CR3BP}.
 \begin{figure}[H]
@@ -209,7 +199,7 @@ These state variables are advanced relative to the barycenter within a rotating 
 % the Lunar Gateway~\cite{LunarGateway} and
 % Psyche~\cite{Psyche}, will continue to push these technologies forward.
 % The present study assumes the installation of a Constant Specific Impulse (CSI) low-thrust engine on the spacecraft.
- By incorporating low-thrust components into the governing equations, the additional propulsion force of the engine modifies the natural equations of motion in the CR3BP is shown as	
+ By incorporating low-thrust components into the governing equations, the additional propulsion force of the engine modifies the natural equations of motion in the Circular Restricted Three-Body Problem (CR3BP) is shown as	
 \begin{align}
 	% \begin{split}
 		\ddot{x} &= 2\dot{y} + x - \frac{(1-\mu)(x+\mu)}{r_1^3} - \frac{\mu(x-1+\mu)}{r_2^3} + u_x, \\
@@ -230,7 +220,7 @@ where \( \boldsymbol{\rho} \) is the state vector and \( \boldsymbol{u} \) is th
 
 
 \subsection{Low-Thrust Control Problem}
-The motion in the CR3BP is inherently nonlinear, displaying significant sensitive dynamical structures. Consequently, the proposed strategy based on differential games and reinforcement learning leverages the impact of the low-thrust terms to attain the intended dynamical response. The thrust \(\mathbf{a}_{lt}\) is determined by:
+The motion in the Circular Restricted Three-Body Problem (CR3BP) is inherently nonlinear, displaying significant sensitive dynamical structures. Consequently, the proposed strategy based on differential games and reinforcement learning leverages the impact of the low-thrust terms to attain the intended dynamical response. The thrust \(\mathbf{a}_{lt}\) is determined by:
 \begin{equation}
 \mathbf{a}_{lt} =  {u}_x \hat{i} + {u}_y \hat{j} + {u}_z \hat{k},
 \end{equation}
@@ -269,20 +259,13 @@ For this study, a representative spacecraft is selected, which has a maximum thr
 This guidance framework leverages reinforcement learning to develop a differential game-based strategy for low-thrust spacecraft in the Earth-Moon environment. It enhances robustness to disturbances, non-ideal engine performance, and parameter variations, while complementing traditional targeting methods. The framework uses the Deep Deterministic Policy Gradient Differential Game (DDPG-DG) algorithm, a model-free, off-policy reinforcement learning approach suited for continuous action spaces. Trained through a differential game where two spacecraft interact as competitive agents, the strategy optimizes control policies in a simulated Earth-Moon system. Evaluated through Lyapunov orbit transfers, the approach demonstrates robustness to perturbations and generalization across mission scenarios and engine models, advancing autonomous spacecraft navigation for deep-space missions.
 
 \subsection{Differential Game Formulation}
-The differential game formulation models dynamic interactions between two competing players in zero-sum games, where one player’s gain equals the other’s loss. The game is defined over a continuous time interval, with the system’s state \( \boldsymbol{x}(t) \) evolving according to differential equations influenced by the players’ control inputs \( \boldsymbol{u}_1(t) \) and \( \boldsymbol{u}_2(t) \). This formulation is widely used in control theory and reinforcement learning to model competitive, evolving strategies.
+The differential game formulation models dynamic interactions between two competing players in zero-sum games, where one player’s gain equals the other's loss. The game is defined over a continuous time interval, with the system's state \( \boldsymbol{x}(t) \) evolving according to differential equations influenced by the players’ control inputs \( \boldsymbol{u}_1(t) \) and \( \boldsymbol{u}_2(t) \). This formulation is widely used in control theory and reinforcement learning to model competitive, evolving strategies.
 
 
 The state dynamics of the system can be described by the following differential equations:
 \begin{equation}
-	\dot{\boldsymbol{\rho}} = \boldsymbol{f}(\boldsymbol{\rho}, \boldsymbol{u}_1(t), \boldsymbol{u}_2(t)), \quad r = \boldsymbol{h}( \boldsymbol{s}, \boldsymbol{u}_1(t), \boldsymbol{u}_2(t)),
+	\dot{\boldsymbol{\rho}} = \boldsymbol{f}(\boldsymbol{\rho}, \boldsymbol{u}_1(t), \boldsymbol{u}_2(t)),
 \end{equation}
-% add minmax equation
-where \( \boldsymbol{\rho} \) is the system state vector, \( \boldsymbol{u}_1(t) \) and \( \boldsymbol{u}_2(t) \) are the control inputs of players 1 and 2, respectively.
-The \(\boldsymbol{s} = \begin{bmatrix}
-	\delta \boldsymbol{\rho} & \delta \dot{\boldsymbol{\rho}}
-\end{bmatrix}\) is the RL state which is the difference vector between the spacecraft and trajectory, and \( r \) is reward.
-The players aim to optimize their control policies to maximize their rewards, which are defined as the negative of the other player's reward.
-
 \subsection{Reinforcement Learning}
 Reinforcement learning is a machine learning paradigm where agents learn optimal control policies through interactions with an environment to maximize cumulative rewards. The agent observes the environment's state, selects actions based on its policy, receives rewards, and iteratively updates its policy to enhance performance. The objective is to learn a policy that maximizes the expected cumulative reward over time.
 
@@ -365,12 +348,11 @@ The Deep Deterministic Policy Gradient Differential Game (DDPG-DG) approach comb
 
 In the context of the Deep Deterministic Policy Gradient Differential Game (DDPG-DG), the system involves two agents, each of which learns a deterministic policy \( \pi_{\theta}(s) \) that maps states \( s \) to actions \( a \). These policies are parameterized by neural networks with weights \( \theta \), and the objective is to optimize the policy parameters to maximize the expected cumulative return. For simplicity and clarity, the same notation \( \pi \) used for the policies of both agents, as their policies follow the same functional form and differ only in their individual parameters.
 
-% The action-value function (Q-function) is defined as the expected return of taking action \( a \) in state \( s \), following the policy \( \pi \). The Q-function is given by:
-% \begin{equation}
-%     Q^{\pi}(s, a) = \mathbb{E} \left[ \sum_{t=0}^{T} \gamma^t r_t | s_0 = s, a_0 = a, \pi \right],
-% \end{equation}
-% where \( r_t \) denotes the reward received at time step \( t \), and \( \gamma \in [0, 1] \) is the discount factor.
- The goal of DDPG-DG is to learn the optimal action-value function, \( Q^{\pi^*}(s, a) \), which provides the expected return for each state-action pair under the Nash equilibrium policy \( \pi^* \). The Nash equilibrium policy is the optimal policy for each agent, given the other agent's policy. 
+The action-value function (Q-function) is defined as the expected return of taking action \( a \) in state \( s \), following the policy \( \pi \). The Q-function is given by:
+\begin{equation}
+    Q^{\pi}(s, a) = \mathbb{E} \left[ \sum_{t=0}^{T} \gamma^t r_t | s_0 = s, a_0 = a, \pi \right],
+\end{equation}
+where \( r_t \) denotes the reward received at time step \( t \), and \( \gamma \in [0, 1] \) is the discount factor. The goal of DDPG is to learn the optimal action-value function, \( Q^{\pi^*}(s, a) \), which provides the expected return for each state-action pair under the optimal policy.
 % add actor and critic networks
 The actor network \( \pi_{\theta}(s) \) is responsible for selecting actions, while the critic network \( Q_{\phi}(s, a) \) evaluates these actions by computing the Q-value. The actor network outputs the action directly, while the critic network estimates the Q-value for a given state-action pair. Both networks are trained using the DDPG algorithm to optimize the policy and value functions.
 The structure of the actor and critic networks is shown in Fig.~\ref{fig:actor_nn} and Fig.~\ref{fig:critic_nn}, respectively. The actor network and critic network consist of fully connected layers with ReLU activation functions. The actor network outputs the action directly, while the critic network estimates the Q-value for a given state-action pair. The actor network is trained to maximize the Q-value, while the critic network is trained to minimize the error between the predicted Q-value and the target Q-value.
@@ -379,25 +361,25 @@ The structure of the actor and critic networks is shown in Fig.~\ref{fig:actor_n
 \input{plots/critic_nn}
 \subsubsection{DDPG-DG Objective}
 
-The DDPG algorithm involves optimizing two primary functions for each player: the policy function (actor) and the Q-function (critic). The actor is responsible for selecting actions, while the critic evaluates these actions by computing the Q-value.
+The DDPG algorithm involves optimizing two primary functions: the policy function (actor) and the Q-function (critic). The actor is responsible for selecting actions, while the critic evaluates these actions by computing the Q-value.
 
-% The policy gradient is given by the deterministic policy gradient theorem, which states that the gradient of the expected return with respect to the policy parameters can be expressed as:
+The policy gradient is given by the deterministic policy gradient theorem, which states that the gradient of the expected return with respect to the policy parameters can be expressed as:
 
-% \begin{equation}
-%     \nabla_{\theta} J(\theta) = \mathbb{E} \left[ \nabla_{\theta} \pi_{\theta}(s) \nabla_a Q(s, a) |_{a = \pi_{\theta}(s)} \right],
-% \end{equation}
-% where \( \nabla_{\theta} \pi_{\theta}(s) \) is the gradient of the policy with respect to its parameters, and \( \nabla_a Q(s, a) \) is the gradient of the Q-function with respect to the action.
+\begin{equation}
+    \nabla_{\theta} J(\theta) = \mathbb{E} \left[ \nabla_{\theta} \pi_{\theta}(s) \nabla_a Q(s, a) |_{a = \pi_{\theta}(s)} \right],
+\end{equation}
+where \( \nabla_{\theta} \pi_{\theta}(s) \) is the gradient of the policy with respect to its parameters, and \( \nabla_a Q(s, a) \) is the gradient of the Q-function with respect to the action.
 
 For the Q-function, the update rule is based on the Bellman equation for continuous action spaces, which provides a target for the Q-function update. The Bellman backup equation is given by:
 
 \begin{equation}
-    y = r + \gamma Q'(s', a'; \theta),
+    y = r + \gamma Q'(s', a'; \theta^-),
 \end{equation}
-where \( r \) is the immediate reward, \( s' \) is the next state, \( a' \) is the action chosen by the target policy \( \pi_{\theta}(s') \), and \( Q'(s', a'; \theta) \) is the target Q-value. The target Q-value is estimated using the target Q-network, which has parameters \( \theta \) and is periodically updated to stabilize training.
+where \( r \) is the immediate reward, \( s' \) is the next state, \( a' \) is the action chosen by the target policy \( \pi_{\theta^-}(s') \), and \( Q'(s', a'; \theta^-) \) is the target Q-value. The target Q-value is estimated using the target Q-network, which has parameters \( \theta^- \) and is periodically updated to stabilize training.
 
 \subsubsection{DDPG-DG Algorithm}
 
-The DDPG-DG algorithm is implemented using two neural networks for each player: the actor network \( \pi_{\theta}(s) \) and the critic network \( Q_{\theta}(s, a) \). These networks are trained using the following algorithm:
+The DDPG-DG algorithm is implemented using two neural networks: the actor network \( \pi_{\theta}(s) \) and the critic network \( Q_{\theta}(s, a) \). These networks are trained using the following algorithm:
 
 % \begin{algorithm}[H]
 %     \caption{Deep Deterministic Policy Gradient Differential
@@ -506,7 +488,7 @@ In DDPG-DG, the exploration of the environment is achieved by adding noise to th
 
 
 \subsection{Environment Configuration}
-The environment for the differential game-based guidance strategy is designed to capture the dynamics of the CR3BP with low-thrust terms. The CR3BP is a classical dynamical system that models the motion of a spacecraft in the vicinity of two primary bodies, such as the Earth and the Moon, where the gravitational forces of the two bodies dominate the spacecraft's motion. The low-thrust terms represent the effects of a continuous thrust engine on the spacecraft's trajectory, allowing for more precise control over the spacecraft's motion.
+The environment for the differential game-based guidance strategy is designed to capture the dynamics of the Circular Restricted Three-Body Problem (CR3BP) with low-thrust terms. The CR3BP is a classical dynamical system that models the motion of a spacecraft in the vicinity of two primary bodies, such as the Earth and the Moon, where the gravitational forces of the two bodies dominate the spacecraft's motion. The low-thrust terms represent the effects of a continuous thrust engine on the spacecraft's trajectory, allowing for more precise control over the spacecraft's motion.
 \subsubsection{State Representation}
 The state of the environment is defined by the position and velocity vectors of the spacecraft in the rotating frame of the CR3BP. The state vector is given by \( \boldsymbol{s} = \begin{bmatrix}
 	\delta x & \delta y & \delta \dot{x} & \delta \dot{y}
@@ -557,7 +539,6 @@ The three scenarios considered for the robustness and generalization experiments
 	  [
 	  ytick={1,2},
 	  yticklabels={DDPG-DG, DDPG},
-	  xlabel=Cumulative Rewards,
 	  ]
 	  \addplot+[
 		boxplot prepared={
@@ -598,7 +579,6 @@ The three scenarios considered for the robustness and generalization experiments
 		  [
 		  ytick={1,2},
 		  yticklabels={DDPG-DG, DDPG},
-	  xlabel=Cumulative Rewards,
 		  ]
 		  \addplot+[
 			boxplot prepared={
@@ -633,7 +613,6 @@ The three scenarios considered for the robustness and generalization experiments
 		  [
 		  ytick={1,2},
 		  yticklabels={DDPG-DG, DDPG},
-	  xlabel=Cumulative Rewards,
 		  ]
 		  \addplot+[
 boxplot prepared={
@@ -670,63 +649,11 @@ boxplot prepared={
 
 
 
-% \section{Conclusion}
-% The proposed guidance framework leverages reinforcement learning to develop a robust differential game-based guidance strategy for low-thrust spacecraft in multi-body dynamical environments. The guidance strategy is designed to handle large initial deviations, enhance resilience against disturbances, and augment conventional targeting guidance methods. The framework is implemented using the Deep Deterministic Policy Gradient (DDPG) algorithm, which is a model-free, off-policy reinforcement learning algorithm that combines the stability of deterministic policy gradients with the flexibility of deep neural networks. The guidance strategy is trained using a differential game formulation, where two spacecraft are modeled as agents in a competitive game. The agents interact with each other and the environment to learn optimal control policies that maximize their rewards. The guidance strategy is implemented in a simulated environment that captures the dynamics of the Circular Restricted Three-Body Problem (CR3BP) with low-thrust terms. The effectiveness of the guidance strategy is demonstrated through sample transfers between Lyapunov orbits in the Earth-Moon system, where the controller exhibits strong robustness to perturbations and generalizes effectively across different mission scenarios and low-thrust engine models. The proposed guidance framework represents a significant advancement in autonomous spacecraft navigation in complex gravitational environments and has the potential to enable a wide range of deep-space missions.
-
-% \section{Conclusion and Future Work}
-
-% \subsection{Conclusion}
-
-% This study introduced a novel reinforcement learning-based differential game framework, DDPG-DG, for autonomous low-thrust spacecraft guidance in multi-body environments. By integrating Deep Deterministic Policy Gradient (DDPG) with differential game theory, the proposed approach effectively models the interactions between competing agents in a multi-agent dynamical system. Unlike traditional methods that rely on precomputed trajectory databases or simplified dynamical models, DDPG-DG enables direct learning from high-fidelity simulations, offering a more adaptive and robust control strategy.
-
-% Through numerical experiments involving Lyapunov orbit transfers in the Earth-Moon system, we demonstrated that DDPG-DG outperforms pure DDPG, particularly in handling:
-% \begin{itemize}
-%     \item Multi-agent interactions, where gravitational forces and disturbances affect the trajectory.
-%     \item Uncertain environmental conditions, such as non-ideal thrust performance and model parameter variations.
-%     \item Real-time computational efficiency, making it feasible for onboard implementation.
-% \end{itemize}
-
-% The results highlight the potential of differential game-based RL methods in enhancing spacecraft autonomy and improving decision-making under complex dynamical constraints. 
-
-% \subsection{Future Work}
-
-% While DDPG-DG has shown significant improvements over standard DDPG, several key directions remain open for future research:
-
-% \paragraph{1. Extending Differential Game Theory to Other RL Methods}  
-% The effectiveness of differential game theory in handling multi-agent interactions suggests that similar principles can be applied to other RL frameworks, such as:
-% \begin{itemize}
-%     \item Model-based RL: Extending differential game methods to hybrid RL approaches that incorporate system dynamics modeling could improve sample efficiency.
-%     \item Multi-agent RL: Applying differential game concepts to policy-sharing and decentralized control strategies in multi-spacecraft formations.
-% \end{itemize}
-
-% \paragraph{2. Safe Reinforcement Learning (Safe RL) Applications}  
-% Spacecraft missions require safety guarantees, particularly in high-risk environments where failures can lead to mission loss. To enhance the safety and stability of RL-based controllers, future work will focus on:
-% \begin{itemize}
-%     \item Integrating constraint-based learning with DDPG-DG to ensure that thrust commands remain within predefined safety limits.
-%     \item Incorporating robust policy adaptation to handle unexpected failures in onboard systems.
-%     \item Using formal verification methods to certify that RL-based controllers satisfy mission-critical constraints.
-% \end{itemize}
-
-% \paragraph{3. Real-Time Implementation and Hardware Testing}  
-% To further validate the feasibility of DDPG-DG, future studies should explore:
-% \begin{itemize}
-%     \item Deployment on real-time embedded systems to evaluate computational overhead.
-%     \item Simulating differential game-based control on high-fidelity mission simulators.
-%     \item Testing on hardware-in-the-loop (HIL) systems to verify real-world applicability.
-% \end{itemize}
-
-% By extending differential game theory to additional RL frameworks and focusing on safe RL strategies, this research paves the way for a new generation of autonomous, adaptive, and safety-critical spacecraft guidance systems.
+\section{Conclusion}
+The proposed guidance framework leverages reinforcement learning to develop a robust differential game-based guidance strategy for low-thrust spacecraft in multi-body dynamical environments. The guidance strategy is designed to handle large initial deviations, enhance resilience against disturbances, and augment conventional targeting guidance methods. The framework is implemented using the Deep Deterministic Policy Gradient (DDPG) algorithm, which is a model-free, off-policy reinforcement learning algorithm that combines the stability of deterministic policy gradients with the flexibility of deep neural networks. The guidance strategy is trained using a differential game formulation, where two spacecraft are modeled as agents in a competitive game. The agents interact with each other and the environment to learn optimal control policies that maximize their rewards. The guidance strategy is implemented in a simulated environment that captures the dynamics of the Circular Restricted Three-Body Problem (CR3BP) with low-thrust terms. The effectiveness of the guidance strategy is demonstrated through sample transfers between Lyapunov orbits in the Earth-Moon system, where the controller exhibits strong robustness to perturbations and generalizes effectively across different mission scenarios and low-thrust engine models. The proposed guidance framework represents a significant advancement in autonomous spacecraft navigation in complex gravitational environments and has the potential to enable a wide range of deep-space missions.
 
 
-\section{Conclusion and Future Work}
 
-\subsection{Conclusion}
-
-This study introduced DDPG-DG, a reinforcement learning-based differential game framework for low-thrust spacecraft guidance in multi-body environments. By integrating Deep Deterministic Policy Gradient (DDPG) with differential game theory, DDPG-DG enables adaptive, real-time control without requiring simplified dynamical models. Simulations of Lyapunov orbit transfers in the Earth-Moon system show that DDPG-DG outperforms standard DDPG in handling multi-agent interactions, disturbances, and real-time computational constraints, making it suitable for onboard applications.
-
-\subsection{Future Work}
-
-Further research can extend differential game theory to other RL frameworks, such as model-based RL for improved sample efficiency and multi-agent RL for decentralized spacecraft coordination. Safe RL applications should integrate constraint-based learning to enforce safety limits, robust policy adaptation for fault tolerance, and formal verification to ensure mission-critical reliability. Real-time deployment on embedded systems, high-fidelity simulations, and hardware-in-the-loop testing will further validate DDPG-DG’s practicality for autonomous space missions.
 
 
 
@@ -770,20 +697,20 @@ Further research can extend differential game theory to other RL frameworks, suc
 \bibitem{Psyche} Dibb, S. D., Asphaug, E., Bell, J. F., Binzel, R. P., Bottke, W. F., Cambioni, S., … Williams, D. A. (2024). A Post-Launch Summary of the Science of NASA's Psyche Mission. AGU Advances, 5(2), e2023AV001077. doi:10.1029/2023AV001077
 \bibitem{13} Yencharis, J. D., Wiley, R. F., Davis, R. S., Holmes, Q. A., \& Zeiler, K. T. (1972). Apollo experience report: Development of guidance targeting techniques for the command module and launch vehicle (No. NASA-TN-D-6848).
 \bibitem{9} B.G. Marchand, M.W. Weeks, C.W. Smith, S. Scarritt, Onboard autonomous targeting for the trans-earth phase of orion, J. Guid. Control Dyn. 33 (2010) 943-956, doi:10.2514/1.42384, https://doi.org/10.2514/1.42384.
-\bibitem{12} Marchand, B. G., Scarritt, S. K., Pavlak, T. A., \& Howell, K. C. (2013). A dynamical approach to precision entry in multi-body regimes: Dispersion manifolds. Acta Astronautica, 89, 107–120. doi:10.1016/j.actaastro.2013.02.015
 \bibitem{11} Haapala, A. F., \& Howell, K. C. (2016). A Framework for Constructing Transfers Linking Periodic Libration Point Orbits in the Spatial Circular Restricted Three-Body Problem. International Journal of Bifurcation and Chaos, 26(05), 1630013. doi:10.1142/S0218127416300135
+\bibitem{12} Marchand, B. G., Scarritt, S. K., Pavlak, T. A., \& Howell, K. C. (2013). A dynamical approach to precision entry in multi-body regimes: Dispersion manifolds. Acta Astronautica, 89, 107–120. doi:10.1016/j.actaastro.2013.02.015
 \bibitem{17} Estlin, Tara \& Bornstein, Benjamin \& Gaines, Daniel \& Anderson, Robert \& Thompson, David \& Burl, Michael \& Castaño, Richard \& Judd, Michele. (2012). AEGIS automated targeting for MER opportunity rover. ACM Transactions on Intelligent Systems and Technology (TIST). 3. 10.1145/2168752.2168764.
 \bibitem{18} Francis R, Estlin T, Doran G, Johnstone S, Gaines D, Verma V, Burl M, Frydenvang J, Montaño S, Wiens RC, Schaffer S, Gasnault O, DeFlores L, Blaney D, Bornstein B. AEGIS autonomous targeting for ChemCam on Mars Science Laboratory: Deployment and results of initial science team use. Sci Robot. 2017 Jun 21;2(7):eaan4582. doi: 10.1126/scirobotics.aan4582. Epub 2017 Jun 21. PMID: 33157897.
 \bibitem{19} S. Higa et al., "Vision-Based Estimation of Driving Energy for Planetary Rovers Using Deep Learning and Terramechanics," in IEEE Robotics and Automation Letters, vol. 4, no. 4, pp. 3876-3883, Oct. 2019, doi: 10.1109/LRA.2019.2928765.
 keywords: {Space exploration;Energy consumption;Space vehicles;Mobile robots;Deep learning;Space robotics and automation;wheeled robotics;deep learning in robotics and automation},
 \bibitem{20} Rothrock, B., Kennedy, R., Cunningham, C., Papon, J., Heverly, M., \& Ono, M. (n.d.). SPOC: Deep Learning-based Terrain Classification for Mars Rover Missions. In AIAA SPACE 2016. doi:10.2514/6.2016-5539
-\bibitem{newrl} Brandonisio, A., Capra, L., \& Lavagna, M. (2024). Deep reinforcement learning spacecraft guidance with state uncertainty for autonomous shape reconstruction of uncooperative target. Advances in Space Research, 73(11), 5741–5755. doi:10.1016/j.asr.2023.07.007
-\bibitem{DDPG} Lillicrap, T. P., Hunt, J. J., Pritzel, A., Heess, N., Erez, T., Tassa, Y., … Wierstra, D. (2019). Continuous control with deep reinforcement learning. arXiv [Cs.LG]. Retrieved from http://arxiv.org/abs/1509.02971
-% \bibitem{DeepSpace1} Rayman, M. D., Varghese, P., Lehman, D. H., \& Livesay, L. L. (2000). Results from the Deep Space 1 technology validation mission. Acta Astronautica, 47(2), 475–487. doi:10.1016/S0094-5765(00)00087-4
-% \bibitem{LunarGateway} Ticker, Ronald \& Gates, Michele \& Manzella, David \& Biaggi-Labiosa, Azlin \& Lee, Ty. (2019). The Gateway Power and Propulsion Element: Setting the Foundation for Exploration and Commerce. 10.2514/6.2019-3811.
-\bibitem{lafarge} LaFarge, N. B., Miller, D., Howell, K. C., \& Linares, R. (2021). Autonomous closed-loop guidance using reinforcement learning in a low-thrust, multi-body dynamical environment. Acta Astronautica, 186, 1-23. doi:10.1016/j.actaastro.2021.05.014
+\bibitem{DeepSpace1} Rayman, M. D., Varghese, P., Lehman, D. H., \& Livesay, L. L. (2000). Results from the Deep Space 1 technology validation mission. Acta Astronautica, 47(2), 475–487. doi:10.1016/S0094-5765(00)00087-4
+\bibitem{LunarGateway} Ticker, Ronald \& Gates, Michele \& Manzella, David \& Biaggi-Labiosa, Azlin \& Lee, Ty. (2019). The Gateway Power and Propulsion Element: Setting the Foundation for Exploration and Commerce. 10.2514/6.2019-3811.
 \bibitem{Sutton} Sutton, R. S., Barto, A. G. (2018 ). Reinforcement Learning: An Introduction. The MIT Press.
+\bibitem{lafarge} LaFarge, N. B., Miller, D., Howell, K. C., \& Linares, R. (2021). Autonomous closed-loop guidance using reinforcement learning in a low-thrust, multi-body dynamical environment. Acta Astronautica, 186, 1-23. doi:10.1016/j.actaastro.2021.05.014
+\bibitem{DDPG} Lillicrap, T. P., Hunt, J. J., Pritzel, A., Heess, N., Erez, T., Tassa, Y., … Wierstra, D. (2019). Continuous control with deep reinforcement learning. arXiv [Cs.LG]. Retrieved from http://arxiv.org/abs/1509.02971
 \end{thebibliography}
+
 % \vspace{12pt}
 % \color{red}
 % IEEE conference templates contain guidance text for composing and formatting conference papers. Please ensure that all template text is removed from your conference paper prior to submission to the conference. Failure to remove the template text from your paper may result in your paper not being published.
