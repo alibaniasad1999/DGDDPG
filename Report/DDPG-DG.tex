@@ -72,17 +72,20 @@
 % \thanks{Identify applicable funding agency here. If none, delete this.}
 % }
 
-\author{\IEEEauthorblockN{Hadi Nobahari}
-\IEEEauthorblockA{\textit{Department of Aerospace Engineering} \\
-\textit{Sharif University of Technology}\\
-Tehran, Iran \\
-nobahari@sharif.edu}
-\and
+\author{
 \IEEEauthorblockN{Ali Baniasad}
+
 \IEEEauthorblockA{\textit{Department of Aerospace Engineering} \\
 \textit{Sharif University of Technology}\\
 Tehran, Iran \\
 ali\_baniasad@ae.sharif.edu}
+\and
+\IEEEauthorblockN{Hadi Nobahari}
+\IEEEauthorblockA{\textit{Department of Aerospace Engineering} \\
+\textit{Sharif University of Technology}\\
+Tehran, Iran \\
+nobahari@sharif.edu
+}
 }
 
 \maketitle
@@ -90,18 +93,18 @@ ali\_baniasad@ae.sharif.edu}
 \begin{abstract}
 % Onboard autonomy plays a pivotal role in facilitating increasingly complex deep-space missions.
 % In dynamic, high-dimensional systems, developing resource-efficient and robust control strategies remains a significant challenge.
-% Conventional approaches often rely on assumptions that simplify the dynamic model or require extensive computational power, limiting their applicability to onboard systems. 
+% Conventional approaches often rely on assumptions that simplify the dynamic model or require extensive computational power, limiting their applicability to onboard systems.
 % This study proposes a novel reinforcement learning-based differential game framework to design an adaptive closed-loop controller for low-thrust spacecraft guidance within multi-body dynamical environments.
-% In contrast to traditional methods, this approach does not require a detailed analytical model of the system dynamics, allowing it to directly address the nonlinear motion equations and establishes a versatile, data-driven learning paradigm. Leveraging advanced computational resources, a robust neural network controller is trained to generate real-time low-thrust control commands, with minimal computational burden on the onboard flight computer. 
+% In contrast to traditional methods, this approach does not require a detailed analytical model of the system dynamics, allowing it to directly address the nonlinear motion equations and establishes a versatile, data-driven learning paradigm. Leveraging advanced computational resources, a robust neural network controller is trained to generate real-time low-thrust control commands, with minimal computational burden on the onboard flight computer.
 % The efficacy of the proposed method is established through example transfers between Lyapunov orbits in the Earth and Moon system, where the controller exhibits significant resilience to disturbances, non-ideal engine performance, and variations in environmental parameters, adapting effectively across different  mission profiles and low-thrust propulsion models.
 % This work underscores the potential of reinforcement learning-based differential game methodologies to advance the autonomy of spacecraft navigation in complex gravitational environments.
 Onboard autonomy is essential for deep-space missions, where spacecraft must navigate complex, multi-body environments with limited computational resources. Traditional guidance methods often require simplified dynamic models or high computational power, making them impractical for onboard implementation.
-This study proposes a reinforcement learning-based differential game framework for designing an adaptive, closed-loop controller for low-thrust spacecraft guidance. Unlike conventional methods, this approach does not require an explicit analytical model of the system's dynamics. Instead, it learns directly from nonlinear motion equations, enabling a data-driven control strategy.
-A neural network-based controller is trained using the Deep Deterministic Policy Gradient Differential Game (DDPG-DG) algorithm to generate real-time low-thrust control commands efficiently. The method is validated through simulated Lyapunov orbit transfers in the Earth-Moon system, where it demonstrates strong robustness to disturbances, engine imperfections, and environmental variations. The results highlight the potential of reinforcement learning-based differential game strategies to enhance spacecraft autonomy in complex gravitational environments.
+This study proposes a reinforcement learning-based differential game framework for designing an adaptive, closed-loop controller for low-thrust spacecraft guidance. Unlike conventional methods, this approach does not require an explicit analytical model of the system's dynamics. Instead, it learns directly from the nonlinear motion equations, enabling a data-driven control strategy.
+A neural network-based controller is trained using the Deep Deterministic Policy Gradient Differential Game (DDPG-DG) algorithm to generate real-time low-thrust control commands efficiently. The method is validated through simulations of Lyapunov orbit transfers in the Earth-Moon system, where it demonstrates strong robustness to disturbances, engine imperfections, and environmental variations. The results highlight the potential of reinforcement learning-based differential game strategies to enhance spacecraft autonomy in complex gravitational environments.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Reinforcement Learning, Differential Game, Robust Controller, Low-Thrust, Multi-Body Dynamics
+Reinforcement learning, Differential games, Robust control, Low-thrust propulsion, Multi-body dynamics
 \end{IEEEkeywords}
 
 \section{Introduction}
@@ -113,9 +116,9 @@ Modern missions, such as NASA's Gateway and Artemis programs, require autonomous
 
 Current onboard guidance strategies depend on precomputed trajectory databases~\cite{13} or two-body approximations~\cite{9}, which struggle in multi-body environments~\cite{12}. While dynamical systems theory and invariant manifolds aid in generating initial trajectory guesses~\cite{11,12}, their computational cost and reliance on human intervention hinder onboard implementation. Neural networks address these gaps by mapping spacecraft states directly to control commands, generating feasible startup arcs for low-thrust targeting. Hybrid frameworks that integrate neural networks with traditional targeting methods leverage computational speed and algorithmic robustness to satisfy mission constraints.
 
-Machine learning is increasingly integral to space autonomy. Mars rovers employ ML for autonomous target selection (e.g., AEGIS on Curiosity~\cite{17}), reducing ground dependency for tasks like image analysis~\cite{18}. Future applications include autonomous robotics on Perseverance~\cite{19,20} and anomaly detection for Europa Clipper~\cite{Clipper}. RL-driven neural controllers further advance this trend by prioritizing feasibility over optimality, enabling rapid in-flight recomputation of control histories through lightweight linear algebra operations. This approach reduces reliance on iterative optimization, mitigates communication risks, and enhances adaptability, positioning RL as a cornerstone of next-generation autonomous space missions.
+Machine learning is increasingly integral to space autonomy. Mars rovers employ ML for autonomous target selection (e.g., AEGIS on Curiosity~\cite{17}), reducing ground dependency for tasks like image analysis~\cite{18}. Future applications include autonomous robotics on Perseverance~\cite{19,20} and anomaly detection for Europa Clipper~\cite{Clipper}. RL-driven neural controllers prioritize feasibility over optimality, enabling rapid in-flight re-computation of control commands via lightweight linear algebra operations, thus reducing reliance on iterative optimization. This approach reduces reliance on iterative optimization, mitigates communication risks, and enhances adaptability, positioning RL as a cornerstone of next-generation autonomous space missions.
 
-While deep reinforcement learning~\cite{newrl} offers promising solutions, traditional methods in spacecraft guidance often rely on simplified models or pre-computed trajectory databases, which are not suitable for real-time operations in multi-body environments. DDPG~\cite{DDPG} has emerged as a robust solution for continuous control tasks, as it does not require an explicit model of the system and can handle high-dimensional, continuous action spaces. However, pure DDPG is limited when it comes to multi-agent dynamics or complex interactions in multi-body systems, where spacecraft motion is influenced by gravitational forces from multiple bodies.
+While deep reinforcement learning~\cite{newrl} offers promising solutions, traditional methods in spacecraft guidance often rely on simplified models or pre-computed trajectory databases, which are not suitable for real-time operations in multi-body environments. DDPG~\cite{DDPG} has emerged as a robust solution for continuous control tasks, as it does not require a pre-defined analytical model of the system. However, pure DDPG is limited when it comes to multi-agent dynamics or complex interactions in multi-body systems, where spacecraft motion is influenced by gravitational forces from multiple bodies.
 
 To address these limitations, this study introduces a novel Deep Deterministic Policy Gradient Differential Game (DDPG-DG) framework. By incorporating differential game theory, DDPG-DG extends the DDPG algorithm to handle multi-agent control tasks in a multi-body environment, where two spacecraft interact as competitive agents. This approach enhances the performance of the DDPG-based controller in the presence of disturbances, non-ideal engine behavior, and variations in environmental parameters, making it more robust than pure DDPG. The proposed method maintains the computational efficiency of DDPG while providing better adaptability to complex dynamical settings.
 
@@ -209,7 +212,7 @@ These state variables are advanced relative to the barycenter within a rotating 
 % the Lunar Gateway~\cite{LunarGateway} and
 % Psyche~\cite{Psyche}, will continue to push these technologies forward.
 % The present study assumes the installation of a Constant Specific Impulse (CSI) low-thrust engine on the spacecraft.
- By incorporating low-thrust components into the governing equations, the additional propulsion force of the engine modifies the natural equations of motion in the CR3BP is shown as	
+ By incorporating low-thrust components into the governing equations, the additional propulsion force of the engine modifies the natural equations of motion in the CR3BP is shown as
 \begin{align}
 	% \begin{split}
 		\ddot{x} &= 2\dot{y} + x - \frac{(1-\mu)(x+\mu)}{r_1^3} - \frac{\mu(x-1+\mu)}{r_2^3} + u_x, \\
@@ -230,7 +233,7 @@ where \( \boldsymbol{\rho} \) is the state vector and \( \boldsymbol{u} \) is th
 
 
 \subsection{Low-Thrust Control Problem}
-The motion in the CR3BP is inherently nonlinear, displaying significant sensitive dynamical structures. Consequently, the proposed strategy based on differential games and reinforcement learning leverages the impact of the low-thrust terms to attain the intended dynamical response. The thrust \(\mathbf{a}_{lt}\) is determined by:
+The motion in the CR3BP is inherently nonlinear, displaying significant sensitivity in dynamical structures. Consequently, the proposed strategy based on differential games and reinforcement learning leverages the impact of the low-thrust terms to attain the intended dynamical response. The thrust \(\mathbf{a}_{lt}\) is determined by:
 \begin{equation}
 \mathbf{a}_{lt} =  {u}_x \hat{i} + {u}_y \hat{j} + {u}_z \hat{k},
 \end{equation}
@@ -238,9 +241,9 @@ where \( \hat{u}_x \), \( \hat{u}_y \), and \( \hat{u}_z \) are the components o
 % The precession of the rotating frame during these intervals can be addressed when transitioning the CR3BP solutions into a higher-fidelity model. It is also important to note that propulsive capability is inversely related to the spacecraft's mass, such that as propellant is consumed, the spacecraft gains a higher thrust-to-mass ratio.
 The nondimensional thrust intensity \( f \) is calculated as follows:
 \begin{equation}
-f = \dfrac{Ft^*}{l^* M_{3,0}},	
+f = \dfrac{Ft^*}{l^* M_{3,0}},
 \end{equation}
-where \( F \), \(t^*\), and \(l^*\) are thrust in kilonewtons, system characteristic time in seconds, and system characteristic length in meters, respectively~\cite{lafarge}. 
+where \( F \), \(t^*\), and \(l^*\) are thrust in kilonewtons, system characteristic time in seconds, and system characteristic length in meters, respectively~\cite{lafarge}.
 For this study, a representative spacecraft is selected, which has a maximum thrust capacity of \( f_{\text{max}} = 0.04 \). An analysis between this spacecraft and other existing or forthcoming propulsion systems is summarized in Table~\ref{tab:camparison}.
 %  The sample spacecraft demonstrates a propulsion capability similar to that of the planned Psyche spacecraft, surpassing that of Hayabusa 1, Hayabusa 2, Dawn, and Lunar IceCube, but falling short of the capabilities of Deep Space 1. As a nondimensional quantity, this thrust level can be applied to any spacecraft with an equivalent thrust-to-mass ratio. Specifically, \( f_{\text{max}} = 0.04 \) corresponds to an 11.46 kg spacecraft equipped with a BIT-3 CubeSat engine (intended for use on Lunar IceCube and LunaH-Map) as well as an 850.2 kg spacecraft utilizing an NSTAR engine~\cite{DeepSpace1} (used on Deep Space 1 and Dawn).
 \begin{table*}[h!]
@@ -316,9 +319,9 @@ A conceptual overview  of the RL process is presented in Fig.~\ref{fig:agent_env
 	\label{fig:agent_env}
 \end{figure}
 
-The agent discovers complex dynamical model that helps its decision-making without external supervision. This process is formalized as an MDP, a classical model for sequential decision-making that integrates actions with feedback. The MDP serves as the theoretical foundation for reinforcement learning, providing an idealized mathematical framework for the problem.
-In the context of an infinite-horizon, discounted framework, a Markov Decision Process is mathematically characterized by the tuple \( \langle A, S, P, r, q_0, \gamma \rangle \), where \( A \) and \( S \) denote the collections of all potential actions and states, respectively. The function \( P: S \times A \times S \to [0, 1] \) 
-which defines the probability of moving from one state to another as a result of taking a specific action. The reward function is denoted by \( r: S \to \mathbb{R} \), mapping states to real-valued rewards. 
+The agent discovers a complex dynamical model that helps its decision-making without external supervision. This process is formalized as an MDP, a classical model for sequential decision-making that integrates actions with feedback. The MDP serves as the theoretical foundation for reinforcement learning, providing an idealized mathematical framework for the problem.
+In the context of an infinite-horizon, discounted framework, a Markov Decision Process is mathematically characterized by the tuple \( \langle A, S, P, r, q_0, \gamma \rangle \), where \( A \) and \( S \) denote the collections of all potential actions and states, respectively. The function \( P: S \times A \times S \to [0, 1] \)
+which defines the probability of moving from one state to another as a result of taking a specific action. The reward function is denoted by \( r: S \to \mathbb{R} \), mapping states to real-valued rewards.
 The initial state distribution is represented by \( q_0 \), while \( \gamma \in [0, 1] \) is the discount factor, governing the present value of future rewards.
 
 
@@ -352,7 +355,7 @@ A prominent class of reinforcement learning methods consists of hybrid algorithm
 
 
 \subsubsection{Neural Networks}
-Neural networks are a category of machine learning architectures that are inspired by the human brain. 
+Neural networks are a category of machine learning architectures that are inspired by the human brain.
 Neural networks are composed of interconnected units, commonly referred to as neurons, arranged in hierarchical layers. Each neuron receives input from the preceding layer, applies a nonlinear activation function, and generates an output that is forwarded to the subsequent layer. These networks possess the capability to model intricate patterns and dependencies within data, enabling them to excel in a diverse array of machine learning applications, including image classification, natural language processing, and reinforcement learning.
 
 
@@ -370,7 +373,7 @@ In the context of the Deep Deterministic Policy Gradient Differential Game (DDPG
 %     Q^{\pi}(s, a) = \mathbb{E} \left[ \sum_{t=0}^{T} \gamma^t r_t | s_0 = s, a_0 = a, \pi \right],
 % \end{equation}
 % where \( r_t \) denotes the reward received at time step \( t \), and \( \gamma \in [0, 1] \) is the discount factor.
- The goal of DDPG-DG is to learn the optimal action-value function, \( Q^{\pi^*}(s, a) \), which provides the expected return for each state-action pair under the Nash equilibrium policy \( \pi^* \). The Nash equilibrium policy is the optimal policy for each agent, given the other agent's policy. 
+ The goal of DDPG-DG is to learn the optimal action-value function, \( Q^{\pi^*}(s, a) \), which provides the expected return for each state-action pair under the Nash equilibrium policy \( \pi^* \). The Nash equilibrium policy is the optimal policy for each agent, given the other agent's policy.
 % add actor and critic networks
 The actor network \( \pi_{\theta}(s) \) is responsible for selecting actions, while the critic network \( Q_{\phi}(s, a) \) evaluates these actions by computing the Q-value. The actor network outputs the action directly, while the critic network estimates the Q-value for a given state-action pair. Both networks are trained using the DDPG algorithm to optimize the policy and value functions.
 The structure of the actor and critic networks is shown in Fig.~\ref{fig:actor_nn} and Fig.~\ref{fig:critic_nn}, respectively. The actor network and critic network consist of fully connected layers with ReLU activation functions. The actor network outputs the action directly, while the critic network estimates the Q-value for a given state-action pair. The actor network is trained to maximize the Q-value, while the critic network is trained to minimize the error between the predicted Q-value and the target Q-value.
@@ -448,12 +451,12 @@ The DDPG-DG algorithm is implemented using two neural networks for each player: 
     \STATE Set target parameters equal to main parameters $\theta_{\text{targ},1} \leftarrow \theta_1$, $\theta_{\text{targ},2} \leftarrow \theta_2$, $\phi_{\text{targ},1} \leftarrow \phi_1$, $\phi_{\text{targ},2} \leftarrow \phi_2$
     \REPEAT
         \STATE Observe state $s$ and select actions for both players $a_1 = \text{clip}(\mu_{\theta_1}(s) + \epsilon_1, a_{Low}, a_{High})$ and $a_2 = \text{clip}(\mu_{\theta_2}(s) + \epsilon_2, a_{Low}, a_{High})$, where $\epsilon_1 \sim \mathcal{N}$ and $\epsilon_2 \sim \mathcal{N}$
-        \STATE Execute actions $(a_1, a_2)$ in the environment
+        \STATE Execute actions $(a_1, a_2)$ in the environment.
         \STATE Observe next state $s'$, reward pair $(r_1, r_2)$ for both players, and done signal $d$
         \STATE Store $(s, a_1, a_2, r_1, r_2, s', d)$ in replay buffer $\mathcal{D}$
         \STATE If $s'$ is terminal, reset environment state.
         \IF{it's time to update}
-            \FOR{however many updates}
+            \FOR{\(j\) in range (however many updates)}
                 \STATE Randomly sample a batch of transitions, $B = \{ (s, a_1, a_2, r_1, r_2, s', d) \}$ from $\mathcal{D}$
 
                 \STATE Compute targets for both players:
@@ -542,7 +545,8 @@ The guidance strategy is implemented using neural networks to approximate the po
 
 
 \section{Robustness and Generalization}
-The robustness and generalization capabilities of the guidance strategy are evaluated through a series of simulation experiments that introduce disturbances, non-ideal thrust engine models, and model parameter variations. The experiments are designed to test the guidance strategy's ability to adapt to changing conditions and generalize across different mission scenarios. The results demonstrate the robustness of the guidance strategy in the presence of disturbances and model uncertainties, as well as its ability to generalize effectively across different mission scenarios and low-thrust engine models. The guidance strategy exhibits strong performance in challenging environments compared to conventional targeting guidance methods, highlighting its potential for autonomous spacecraft navigation in complex dynamical systems.
+The robustness and generalization capabilities of the guidance strategy are evaluated through a series of simulation experiments that introduce disturbances, non-ideal thrust engine models, and model parameter variations. The experiments are designed to test the guidance strategy's ability to adapt to changing conditions and generalize across different mission scenarios. The results demonstrate the robustness of the guidance strategy against disturbances and model uncertainties, as well as its ability to generalize effectively across different mission scenarios and low-thrust engine configurations. The guidance strategy exhibits strong performance relative to conventional targeting methods in simulation studies.
+
 % results ploted rewards in box plot
 The three scenarios considered for the robustness and generalization experiments for disturbances, non-ideal thrust engine models, and model parameter variations are shown in Fig.~\ref{fig:disturbance}, Fig.~\ref{fig:thrust}, and Fig.~\ref{fig:parameter}, respectively.
 
@@ -657,7 +661,7 @@ boxplot prepared={
 		% model parameter variation 1000 samples mont carlo
 	  \end{tikzpicture}
 	  \caption{
-		Comparison of the total rewards obtained by the DDPG and DDPG-DG algorithms in the presence of model parameter variations.
+		Comparison of the total rewards obtained by the DDPG and DDPG-DG algorithms in the presence of gravitational parameter variation.
 	}\label{fig:parameter}
 \end{figure}
 
@@ -686,20 +690,20 @@ boxplot prepared={
 %     \item Real-time computational efficiency, making it feasible for onboard implementation.
 % \end{itemize}
 
-% The results highlight the potential of differential game-based RL methods in enhancing spacecraft autonomy and improving decision-making under complex dynamical constraints. 
+% The results highlight the potential of differential game-based RL methods in enhancing spacecraft autonomy and improving decision-making under complex dynamical constraints.
 
 % \subsection{Future Work}
 
 % While DDPG-DG has shown significant improvements over standard DDPG, several key directions remain open for future research:
 
-% \paragraph{1. Extending Differential Game Theory to Other RL Methods}  
+% \paragraph{1. Extending Differential Game Theory to Other RL Methods}
 % The effectiveness of differential game theory in handling multi-agent interactions suggests that similar principles can be applied to other RL frameworks, such as:
 % \begin{itemize}
 %     \item Model-based RL: Extending differential game methods to hybrid RL approaches that incorporate system dynamics modeling could improve sample efficiency.
 %     \item Multi-agent RL: Applying differential game concepts to policy-sharing and decentralized control strategies in multi-spacecraft formations.
 % \end{itemize}
 
-% \paragraph{2. Safe Reinforcement Learning (Safe RL) Applications}  
+% \paragraph{2. Safe Reinforcement Learning (Safe RL) Applications}
 % Spacecraft missions require safety guarantees, particularly in high-risk environments where failures can lead to mission loss. To enhance the safety and stability of RL-based controllers, future work will focus on:
 % \begin{itemize}
 %     \item Integrating constraint-based learning with DDPG-DG to ensure that thrust commands remain within predefined safety limits.
@@ -707,7 +711,7 @@ boxplot prepared={
 %     \item Using formal verification methods to certify that RL-based controllers satisfy mission-critical constraints.
 % \end{itemize}
 
-% \paragraph{3. Real-Time Implementation and Hardware Testing}  
+% \paragraph{3. Real-Time Implementation and Hardware Testing}
 % To further validate the feasibility of DDPG-DG, future studies should explore:
 % \begin{itemize}
 %     \item Deployment on real-time embedded systems to evaluate computational overhead.
