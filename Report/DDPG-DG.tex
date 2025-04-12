@@ -151,57 +151,63 @@ These state variables are advanced relative to the barycenter within a rotating 
 \begin{figure}[H]
 	\centering
     \resizebox{\linewidth}{!}{
-	\begin{tikzpicture}
-		% Coordinates
-		\coordinate (earth) at (1,2);
-		\coordinate (moon) at (8,1);
-		\coordinate (earth-point1) at ({\r*cos(\Theta)+1},{\r*sin(\Theta)+2});
-		\coordinate (A) at (-.5,.5);
-		\coordinate (B) at (8.5,-0.5);
-
-		% Earth
-		\draw[thick, fill=black!30, draw=black!30
-		] (earth) circle (\r);
-		% Text
-		\node (a) at (A) {Earth};
-
-		% Moon
-		\node[circle, inner sep=5.5pt, fill=black!30] (MOON) at (moon) {};
-		% Text
-		\node[below, shift={(0,-0.4)}] at (MOON) {$m$};
-		\node (b) at (B) {Moon};
-
-		% Lines
-		% \draw[-latex] (earth) -- (MOON) node[pos=.55, below left] {$\vb{r}_o$};
-		% \draw[-latex] (earth) -- (earth-point1) node [pos=0.6, left] {$\vb{r}$};
-		\draw[-stealth] (a) to[bend left=30] ({\r*cos(\Phi)+1},{\r*sin(\Phi)+2});
-		\draw[-stealth] (b) to[bend left=-30] (MOON);
-		\draw[dashed, black] (earth) -- (MOON.center);
-
-		% center of mass 0.25 from earth
-		\coordinate (center) at ($(earth)!0.3!(MOON)$);
-		% small circle
-		\draw[fill=black] (center) circle (1.5pt) node[below, shift={(0,-0.1)}] {Barycenter};
-		% add satellite with shift
-		\coordinate (satellite) at ($(center)!0.5!(MOON)+(0,2)$);
-		% \node at ($(center)!0.5!(MOON)+(0,2)$) {\faSatellite};
-		% shift coordinate
-		\node (satellite) at (satellite) {\faSatellite};
-
-		% connect earth to satellite r1
-		\draw[-stealth] (earth) -- (satellite) node[pos=0.75, above] {$\vb{r}_1$};
-		% connect moon to satellite r2
-		\draw[-stealth] (MOON) -- (satellite) node[pos=0.5, above] {$\vb{r}_2$};
-		% connect center of mass to satellite r
-		\draw[-stealth] (center) -- (satellite) node[pos=0.5, above] {$\vb{r}$};
-		% add line to show satellite is in between
-		\node (c) at ($(satellite)+(1.5,0.5)$) {Spacecraft};
-		\draw[-stealth] (c) to[bend left=30] (satellite);
-		% add x y axis from center of mass connect to moon
-		\draw[-stealth] (center) -- ($(center)!0.5!(MOON)$) node[below] {$\hat x$};
-		% plot y vertical to x
-		\draw[-stealth] (center) -- ($(center)+(0.4,2)$) node[left] {$\hat y$};
-	\end{tikzpicture}}
+		\begin{tikzpicture}
+			% Coordinates
+			\coordinate (earth) at (1,2);
+			\coordinate (moon) at (8,1);
+			\coordinate (earth-point1) at ({\r*cos(\Theta)+1},{\r*sin(\Theta)+2});
+			\coordinate (A) at (-.5,.5);
+			\coordinate (B) at (8.5,-0.5);
+			
+			% Earth
+			\draw[thick, fill=black!30, draw=black!30
+			] (earth) circle (\r);
+			\node[inner sep=0pt] (Earth_c) at (earth) {\includegraphics[width=1.8cm]{../Figure/TBP/Earth.png}};
+			% Text
+			\node[below, shift={(0,-0.8)}] at (earth) {$m_1$};
+			\node (a) at (A) {Earth};
+			
+			% Moon
+			\node[circle, inner sep=5.5pt, fill=black!30] (MOON) at (moon) {};
+			\node[inner sep=0pt] (moon_c) at (moon) {\includegraphics[width=.5cm]{../Figure/TBP/Moon.png}};
+			% Text 
+			\node[below, shift={(0,-0.4)}] at (MOON) {$m_2$};
+			\node (b) at (B) {Moon};
+			
+			% Lines
+			\draw[-stealth] (a) to[bend left=30] ({\r*cos(\Phi)+1},{\r*sin(\Phi)+2});
+			\draw[-stealth] (b) to[bend left=-30] (MOON);
+			\draw[dashed, black] (earth) -- (MOON.center);
+			
+			% center of mass 0.25 from earth
+			\coordinate (center) at ($(earth)!0.3!(MOON)$);
+			% small circle
+			\draw[fill=black] (center) circle (1.5pt) node[below, shift={(0,-0.1)}] {Center of Mass};
+			
+			% Calculate direction from Earth to Moon
+			\pgfmathsetmacro{\xDiff}{8 - 1} % X difference between Moon and Earth
+			\pgfmathsetmacro{\yDiff}{1 - 2} % Y difference between Moon and Earth
+			\pgfmathsetmacro{\angle}{atan2(\yDiff,\xDiff)} % Angle of the line
+			
+			% Add axes at center of mass
+			\draw[->, thick] (center) -- ++(\angle:2) node[above, shift={(0,0.2)}] {X-axis};
+			\draw[->, thick] (center) -- ++(\angle+90:2) node[above] {Y-axis};
+			
+			% add satellite with shift
+			\coordinate (satellite) at ($(center)!0.5!(MOON)+(0,2)$);
+			\node (satellite) at (satellite) {\faSatellite};
+			
+			% connect earth to satellite r1
+			\draw[-stealth] (earth) -- (satellite) node[pos=0.3, above] {$\vb{r}_1$};   
+			% connect moon to satellite r2
+			\draw[-stealth] (MOON) -- (satellite) node[pos=0.5, above] {$\vb{r}_2$};
+			% connect center of mass to satellite r
+			\draw[-stealth] (center) -- (satellite) node[pos=0.5, above] {$\vb{r}$};
+			% add line to show satellite is in between
+			\node (c) at ($(satellite)+(1.5,0.5)$) {Satellite};
+			\draw[-stealth] (c) to[bend left=30] (satellite);
+			
+		\end{tikzpicture}}
 	\caption{Definition of a planar CR3BP vector.}\label{fig:CR3BP}
 \end{figure}
 

@@ -10,7 +10,7 @@
     "actor_critic":	"MLPActorCritic",
     "batch_size":	128,
     "device":	"cpu",
-    "env_fn":	"<function <lambda> at 0x17690ca40>",
+    "env_fn":	"<function <lambda> at 0x16b7cea20>",
     "epochs_":	50,
     "exp_name":	"ddpg",
     "gamma_":	0.99,
@@ -31,7 +31,7 @@
     "save_freq":	1,
     "seed_":	0,
     "self":	{
-        "<__main__.DDPG object at 0x17677ac90>":	{
+        "<__main__.DDPG object at 0x16b43ae10>":	{
             "ac":	{
                 "MLPActorCritic(\n  (pi): MLPActor(\n    (pi): Sequential(\n      (0): Linear(in_features=4, out_features=32, bias=True)\n      (1): ReLU()\n      (2): Linear(in_features=32, out_features=32, bias=True)\n      (3): ReLU()\n      (4): Linear(in_features=32, out_features=2, bias=True)\n      (5): Tanh()\n    )\n  )\n  (q): MLPQFunction(\n    (q): Sequential(\n      (0): Linear(in_features=6, out_features=32, bias=True)\n      (1): ReLU()\n      (2): Linear(in_features=32, out_features=32, bias=True)\n      (3): ReLU()\n      (4): Linear(in_features=32, out_features=1, bias=True)\n      (5): Identity()\n    )\n  )\n)":	{
                     "_backward_hooks":	{},
@@ -230,7 +230,7 @@
                                 "_parameters":	{},
                                 "_state_dict_hooks":	{},
                                 "_state_dict_pre_hooks":	{},
-                                "act_limit":	"10.0",
+                                "act_limit":	"4.0",
                                 "training":	true
                             }
                         },
@@ -627,7 +627,7 @@
                                 "_parameters":	{},
                                 "_state_dict_hooks":	{},
                                 "_state_dict_pre_hooks":	{},
-                                "act_limit":	"10.0",
+                                "act_limit":	"4.0",
                                 "training":	true
                             }
                         },
@@ -826,13 +826,13 @@
                     "training":	true
                 }
             },
-            "act_limit":	"10.0",
+            "act_limit":	"4.0",
             "act_noise":	0.1,
             "batch_size":	128,
             "env":	{
                 "<ThreeBodyEnv instance>":	{
                     "action_space":	{
-                        "Box(-10.0, 10.0, (2,), float32)":	{
+                        "Box(-4.0, 4.0, (2,), float32)":	{
                             "_np_random":	null,
                             "_shape":	[
                                 2
@@ -840,15 +840,15 @@
                             "bounded_above":	"[ True  True]",
                             "bounded_below":	"[ True  True]",
                             "dtype":	"float32",
-                            "high":	"[10. 10.]",
-                            "high_repr":	"10.0",
-                            "low":	"[-10. -10.]",
-                            "low_repr":	"-10.0"
+                            "high":	"[4. 4.]",
+                            "high_repr":	"4.0",
+                            "low":	"[-4. -4.]",
+                            "low_repr":	"-4.0"
                         }
                     },
                     "dt":	0.01,
-                    "error_range":	0.1,
-                    "final_range":	0.05,
+                    "error_range":	0.01,
+                    "final_range":	0.001,
                     "max_steps":	1000,
                     "mu":	0.012277471,
                     "observation_space":	{
@@ -881,7 +881,7 @@
             "epochs":	50,
             "gamma":	0.99,
             "logger":	{
-                "<utils.logx.EpochLogger object at 0x176836f90>":	{
+                "<utils.logx.EpochLogger object at 0x16b10ef50>":	{
                     "epoch_dict":	{},
                     "exp_name":	"ddpg",
                     "first_row":	true,
@@ -1005,7 +1005,7 @@
                 }
             },
             "replay_buffer":	{
-                "<__main__.ReplayBuffer object at 0x1768c6d50>":	{
+                "<__main__.ReplayBuffer object at 0x16a5f7b90>":	{
                     "act_buf":	"[[0. 0.]\n [0. 0.]\n [0. 0.]\n ...\n [0. 0.]\n [0. 0.]\n [0. 0.]]",
                     "done_buf":	"[0. 0. 0. ... 0. 0. 0.]",
                     "max_size":	1000000,
@@ -1022,7 +1022,7 @@
             "test_env":	{
                 "<ThreeBodyEnv instance>":	{
                     "action_space":	{
-                        "Box(-10.0, 10.0, (2,), float32)":	{
+                        "Box(-4.0, 4.0, (2,), float32)":	{
                             "_np_random":	null,
                             "_shape":	[
                                 2
@@ -1030,15 +1030,15 @@
                             "bounded_above":	"[ True  True]",
                             "bounded_below":	"[ True  True]",
                             "dtype":	"float32",
-                            "high":	"[10. 10.]",
-                            "high_repr":	"10.0",
-                            "low":	"[-10. -10.]",
-                            "low_repr":	"-10.0"
+                            "high":	"[4. 4.]",
+                            "high_repr":	"4.0",
+                            "low":	"[-4. -4.]",
+                            "low_repr":	"-4.0"
                         }
                     },
                     "dt":	0.01,
-                    "error_range":	0.1,
-                    "final_range":	0.05,
+                    "error_range":	0.01,
+                    "final_range":	0.001,
                     "max_steps":	1000,
                     "mu":	0.012277471,
                     "observation_space":	{
