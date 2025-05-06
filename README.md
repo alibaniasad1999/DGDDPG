@@ -210,7 +210,7 @@ Neural networks are a category of machine learning architectures that are inspir
 <p align="center">Actor Network Structure.</p>
 
 
-![Alt text for the image](Figure/actor.png)
+![Alt text for the image](Figure/critic.png)
 <p align="center">Critic Network Structure.</p>
 
 ### Deep Deterministic Policy Gradient Differential Game
